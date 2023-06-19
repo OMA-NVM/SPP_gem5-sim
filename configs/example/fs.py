@@ -133,6 +133,11 @@ def build_test_system(np):
         clock=args.cpu_clock, voltage_domain=test_sys.cpu_voltage_domain
     )
 
+    test_sys.mainMemMonitor = CommMonitor()
+    test_sys.mainMemMonitor.trace = MemTraceProbe(trace_file = "memTraces.trc.gz")
+    #test_sys.cacheMonitor = CommMonitor()
+    #test_sys.cacheMonitor.trace = MemTraceProbe(trace_file = "cacheTraces.trc.gz")
+    
     if buildEnv["USE_RISCV_ISA"]:
         test_sys.workload.bootloader = args.kernel
     elif args.kernel is not None:
@@ -177,6 +182,7 @@ def build_test_system(np):
     else:
         if args.caches or args.l2cache:
             # By default the IOCache runs at the system clock
+            print("hier cache")
             test_sys.iocache = IOCache(addr_ranges=test_sys.mem_ranges)
             test_sys.iocache.cpu_side = test_sys.iobus.mem_side_ports
             test_sys.iocache.mem_side = test_sys.membus.cpu_side_ports
@@ -184,6 +190,7 @@ def build_test_system(np):
             test_sys.iobridge = Bridge(
                 delay="50ns", ranges=test_sys.mem_ranges
             )
+
             test_sys.iobridge.cpu_side_port = test_sys.iobus.mem_side_ports
             test_sys.iobridge.mem_side_port = test_sys.membus.cpu_side_ports
 

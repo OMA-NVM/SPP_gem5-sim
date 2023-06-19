@@ -37,7 +37,6 @@ import m5.objects
 from common import ObjectList
 from common import HMC
 
-
 def create_mem_intf(intf, r, i, intlv_bits, intlv_size, xor_low_bit):
     """
     Helper function for creating a single memoy controller from the given
@@ -142,6 +141,7 @@ def config_mem(options, system):
     opt_mem_channels_intlv = getattr(options, "mem_channels_intlv", 128)
     opt_xor_low_bit = getattr(options, "xor_low_bit", 0)
 
+    #monitor for traces
     if opt_mem_type == "HMC_2500_1x32":
         HMChost = HMC.config_hmc_host_ctrl(options, system)
         HMC.config_hmc_dev(options, system, HMChost.hmc_host)
@@ -277,6 +277,8 @@ def config_mem(options, system):
             mem_ctrls[i].dram.device_size = options.hmc_dev_vault_size
         else:
             # Connect the controllers to the membus
-            mem_ctrls[i].port = xbar.mem_side_ports
+            print(len(mem_ctrls))
+            mem_ctrls[i].port = system.mainMemMonitor.mem_side_port
+            system.mainMemMonitor.cpu_side_port = xbar.mem_side_ports
 
     subsystem.mem_ctrls = mem_ctrls
