@@ -34,3 +34,5 @@ configs/dram/lowp_sweep.cfg
 .vscode
 .cache
 compile_commands.json
+gem5.terminal
+traceFiles/
