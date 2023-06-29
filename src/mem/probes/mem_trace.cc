@@ -39,11 +39,13 @@
 
 #include "base/callback.hh"
 #include "base/output.hh"
+#include "mem/packet.hh"
 #include "params/MemTraceProbe.hh"
 #include "proto/packet.pb.h"
 #include "sim/core.hh"
 #include "sim/cur_tick.hh"
 #include "sim/system.hh"
+#include <cstdint>
 
 namespace gem5
 {
@@ -120,8 +122,11 @@ MemTraceProbe::handleRequest(const probing::PacketInfo &pkt_info)
     if (withPC && pkt_info.pc != 0)
         pkt_msg.set_pc(pkt_info.pc);
     pkt_msg.set_pkt_id(pkt_info.id);
-
+    if(pkt_info.cmd.hasData())
+        //TODO: probably not a good typecast from getPtr<uint8_t> to uint64_t
+        pkt_msg.set_data((uint64_t)pkt_info.data);
     traceStream->write(pkt_msg);
+
 }
 
 } // namespace gem5

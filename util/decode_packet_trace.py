@@ -96,8 +96,8 @@ def main():
             ascii_out.write("%s," % (packet.pkt_id))
         if packet.HasField("flags"):
             ascii_out.write(
-                "%s,%s,%s,%s,%s"
-                % (cmd, packet.addr, packet.size, packet.flags, packet.tick)
+                "%s %s %s %s %s %s %s %s %s %s %s %s"
+                % ("cmd: ", cmd," addr: ", packet.addr," size: ", packet.size," flag: ", packet.flags," tick: ", packet.tick, " data: ", packet.data)
             )
         else:
             ascii_out.write(

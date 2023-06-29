@@ -63,6 +63,7 @@ struct PacketInfo
     Request::FlagsType flags;
     Addr pc;
     RequestorID id;
+    PacketDataPtr data;
 
     explicit PacketInfo(const PacketPtr& pkt) :
         cmd(pkt->cmd),
@@ -70,7 +71,8 @@ struct PacketInfo
         size(pkt->getSize()),
         flags(pkt->req->getFlags()),
         pc(pkt->req->hasPC() ? pkt->req->getPC() : 0),
-        id(pkt->req->requestorId())  { }
+        id(pkt->req->requestorId()),
+        data(pkt->hasData() ? pkt->getPtr<uint8_t>() : nullptr)  { }
 };
 
 /**
