@@ -20,7 +20,8 @@ traceCache() {
 
 #decode das andere
 traceMem() {
-    util/decode_packet_trace.py m5out/memTraces.trc.gz $1_memTrace
+    mv m5out/memTraces.trc.gz /workspaces/gem5-sim/cpu_tests/benchmarks/traceFiles/$1_memTrace.trc.gz
+    util/decode_packet_trace.py /workspaces/gem5-sim/cpu_tests/benchmarks/traceFiles/$1_memTrace.trc.gz $1_memTrace
     mv $1_memTrace /workspaces/gem5-sim/cpu_tests/benchmarks/traceFiles
 }
 
@@ -31,7 +32,7 @@ case $1 in
     cacheTrace | ct)
         traceCache $2
     ;;
-    cacheMem | mt)
+    memTrace | mt)
         traceMem $2
     ;;
 

@@ -114,6 +114,5 @@ def main():
     ascii_out.close()
     proto_in.close()
 
-
 if __name__ == "__main__":
     main()

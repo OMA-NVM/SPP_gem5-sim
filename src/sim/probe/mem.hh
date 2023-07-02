@@ -38,10 +38,12 @@
 #ifndef __SIM_PROBE_MEM_HH__
 #define __SIM_PROBE_MEM_HH__
 
+#include <cstdint>
 #include <memory>
 
 #include "mem/packet.hh"
 #include "sim/probe/probe.hh"
+#include "mem/packet_access.hh"
 
 namespace gem5
 {
@@ -63,7 +65,7 @@ struct PacketInfo
     Request::FlagsType flags;
     Addr pc;
     RequestorID id;
-    PacketDataPtr data;
+    uint64_t data;
 
     explicit PacketInfo(const PacketPtr& pkt) :
         cmd(pkt->cmd),
@@ -72,7 +74,7 @@ struct PacketInfo
         flags(pkt->req->getFlags()),
         pc(pkt->req->hasPC() ? pkt->req->getPC() : 0),
         id(pkt->req->requestorId()),
-        data(pkt->hasData() ? pkt->getPtr<uint8_t>() : nullptr)  { }
+        data(pkt->hasData() ? pkt->getRaw<uint64_t>() : 0)  { }
 };
 
 /**
