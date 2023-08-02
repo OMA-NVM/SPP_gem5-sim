@@ -13,8 +13,10 @@ jobs:
       - name: Checkout (GitHub)
         uses: actions/checkout@v3
 
-      - name: Build and run dev container task
+      - name: Pre-build image and run make ci-build in dev container
         uses: devcontainers/ci@v0.3
         with:
-          # Change this to be your CI task/script
-          runCmd: scons --ignore-style build/ARM/gem5.fast -j 8
+          imageName: ghcr.io/nilhoel1/spp-gem5
+          cacheFrom: ghcr.io/nilhoel1/spp-gem5
+          push: always
+          runCmd: scons --ignore-style build/ARM/gem5.fast
