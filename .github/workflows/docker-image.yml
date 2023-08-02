@@ -16,4 +16,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file .devcontainer/Dockerfile --tag SPP-GEM5-Container:$(date +%s)
+      run: docker build . --file .devcontainer/Dockerfile --tag spp-gem5-container:$(date +%s)
