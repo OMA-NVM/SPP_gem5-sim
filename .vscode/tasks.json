@@ -6,7 +6,7 @@
     {
       "label": "build",
       "type": "shell",
-      "command": "scons build/ARM/gem5.fast -j 8 ; scons build/ARM/compile_commands.json ; cp build/ARM/compile_commands.json compile_commands.json",
+      "command": "scons --ignore-style build/ARM/gem5.fast -j 8 ; scons build/ARM/compile_commands.json ; cp build/ARM/compile_commands.json compile_commands.json",
       "problemMatcher": [],
       "group": {
         "kind": "build",
