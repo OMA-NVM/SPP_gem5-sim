@@ -31,7 +31,7 @@ jobs:
         #- uses: education/autograding@v1
         with:
           # Change this to point to your image name
-          imageName: ghcr.io/nilhoel1/llvmta-devcontainer
+          imageName: ghcr.io/nilhoel1/gem5-devcontainer
 
 # jobs:
 
