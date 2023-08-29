@@ -37,7 +37,7 @@ TraceEventObject::getFlag()
 void
 TraceEventObject::setFlag()
 {
-    this-> flag = 0;
+    this->flag = 0;
 }
 
 void 
@@ -45,7 +45,6 @@ TraceEventObject::resetFile()
 {
     trace.open(filePath);
     trace.close();
-    setFlag();
 }
 
 void 
@@ -64,7 +63,6 @@ void
 TraceEventObject::startup()
 {
     buffer.clear();
-    std::cout << buffer.size();
     resetFile();
     schedule(event, curTick() + time);
 }
