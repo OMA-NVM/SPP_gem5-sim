@@ -120,7 +120,6 @@ def config_mem(options, system):
 
     # Mandatory options
     opt_mem_channels = options.mem_channels
-
     # Semi-optional options
     # Must have either mem_type or nvm_type or both
     opt_mem_type = getattr(options, "mem_type", None)
@@ -237,6 +236,8 @@ def config_mem(options, system):
                 # Create the controller that will drive the interface
                 mem_ctrl = dram_intf.controller()
 
+                mem_ctrl.tracerObject = system.tracer
+                
                 mem_ctrls.append(mem_ctrl)
 
             elif opt_nvm_type and (not opt_mem_type or range_iter % 2 == 0):
@@ -277,8 +278,8 @@ def config_mem(options, system):
         else:
             # Connect the controllers to the membus
             # Monitor for traces
-            print(len(mem_ctrls))
-            mem_ctrls[i].port = system.mainMemMonitor.mem_side_port
-            system.mainMemMonitor.cpu_side_port = xbar.mem_side_ports
+            mem_ctrls[i].port = xbar.mem_side_ports
+            #mem_ctrls[i].port = system.mainMemMonitor.mem_side_port
+            #system.mainMemMonitor.cpu_side_port = xbar.mem_side_ports
 
     subsystem.mem_ctrls = mem_ctrls

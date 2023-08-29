@@ -39,7 +39,6 @@
  */
 
 #include "mem/mem_ctrl.hh"
-
 #include "base/trace.hh"
 #include "debug/DRAM.hh"
 #include "debug/Drain.hh"
@@ -49,7 +48,17 @@
 #include "mem/dram_interface.hh"
 #include "mem/mem_interface.hh"
 #include "mem/nvm_interface.hh"
+#include "mem/comm_monitor.hh"
+#include "memory_content.hh"
+#include "sim/cur_tick.hh"
 #include "sim/system.hh"
+#include <alloca.h>
+#include <cstdint>
+#include <fstream>
+#include <ios>
+#include <iostream>
+#include <ostream>
+
 
 namespace gem5
 {
@@ -65,6 +74,7 @@ MemCtrl::MemCtrl(const MemCtrlParams &p) :
                          respondEvent, nextReqEvent, retryWrReq);}, name()),
     respondEvent([this] {processRespondEvent(dram, respQueue,
                          respondEvent, retryRdReq); }, name()),
+    tracer(p.tracerObject),
     dram(p.dram),
     readBufferSize(dram->readBufferSize),
     writeBufferSize(dram->writeBufferSize),
@@ -79,6 +89,7 @@ MemCtrl::MemCtrl(const MemCtrlParams &p) :
     commandWindow(p.command_window),
     prevArrival(0),
     stats(*this)
+    
 {
     DPRINTF(MemCtrl, "Setting up controller\n");
 
@@ -143,6 +154,9 @@ MemCtrl::recvAtomicLogic(PacketPtr pkt, MemInterface* mem_intr)
              "is responding");
 
     // do the actual memory access and turn the packet into a response
+    /*if(mem_intr->toHostAddr(pkt->getAddr()))
+        pkt->overwritten = mem_intr->toHostAddr(pkt->getAddr());
+    //std::cout << "Copied Data from Host: " << uint64_t(*pkt->overwritten) << "\n";*/
     mem_intr->access(pkt);
 
     if (pkt->hasData()) {
@@ -623,8 +637,29 @@ MemCtrl::accessAndRespond(PacketPtr pkt, Tick static_latency,
     // response
     panic_if(!mem_intr->getAddrRange().contains(pkt->getAddr()),
              "Can't handle address range for packet %s\n", pkt->print());
+    
+    auto it = memory_map.find(pkt->getAddr());
+    if(it == memory_map.end()) {
+        memory_content c;
+        c.setAddress(pkt->getAddr());
+        c.setNewContent(uint64_t(*mem_intr->toHostAddr(pkt->getAddr())));
+        //std::cout << "Add memory content first time\n";
+        c.updateContent(pkt->getAddr(), pkt->isWrite(), uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
+        memory_map.insert(std::pair<Addr, memory_content>(pkt->getAddr(), c));
+        tracer->insertBuffer(c);
+    } else {
+        if(pkt->isWrite()) {
+            //std::cout << "Update memory\n";
+            it->second.updateContent(pkt->getAddr(), pkt->isWrite(), uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
+            tracer->insertBuffer(it->second);
+        } else {
+            it->second.setCmd(0);
+            it->second.setTick(curTick());
+            tracer->insertBuffer(it->second);
+        }
+    }   
     mem_intr->access(pkt);
-
+    
     // turn packet around to go back to requestor if response expected
     if (needsResponse) {
         // access already turned the packet into a response
@@ -1369,6 +1404,25 @@ MemCtrl::recvFunctionalLogic(PacketPtr pkt, MemInterface* mem_intr)
 {
     if (mem_intr->getAddrRange().contains(pkt->getAddr())) {
         // rely on the abstract memory
+        auto it = memory_map.find(pkt->getAddr());
+        if(it == memory_map.end()) {
+            memory_content c;
+            c.setAddress(pkt->getAddr());
+            c.setOldContent(uint64_t(*mem_intr->toHostAddr(pkt->getAddr())));
+            //std::cout << "Add memory content first time\n";
+            c.updateContent(pkt->getAddr(), pkt->isWrite(), uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
+            memory_map.insert(std::pair<Addr, memory_content>(pkt->getAddr(), c));
+        } else {
+            if(pkt->isWrite()) {
+                //std::cout << "Update memory\n";
+                it->second.updateContent(pkt->getAddr(), pkt->isWrite(),uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
+                tracer->insertBuffer(it->second);
+            } else {
+                it->second.setCmd(0);
+                it->second.setTick(curTick());
+                tracer->insertBuffer(it->second);
+            }
+        }   
         mem_intr->functionalAccess(pkt);
         return true;
     } else {
