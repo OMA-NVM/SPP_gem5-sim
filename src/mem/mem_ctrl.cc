@@ -88,7 +88,7 @@ MemCtrl::MemCtrl(const MemCtrlParams &p) :
     commandWindow(p.command_window),
     prevArrival(0),
     stats(*this)
-    
+        
 {
     DPRINTF(MemCtrl, "Setting up controller\n");
 
@@ -289,9 +289,7 @@ MemCtrl::addToReadQueue(PacketPtr pkt,
             // log packet
             logRequest(MemCtrl::READ, pkt->requestorId(),
                        pkt->qosValue(), mem_pkt->addr, 1);
-
             mem_intr->readQueueSize++;
-
             // Update stats
             stats.avgRdQLen = totalReadQueueSize + respQueue.size();
         }
@@ -1140,7 +1138,6 @@ MemCtrl::processNextReqEvent(MemInterface* mem_intr,
         logResponse(MemCtrl::WRITE, mem_pkt->requestorId(),
                     mem_pkt->qosValue(), mem_pkt->getAddr(), 1,
                     mem_pkt->readyTime - mem_pkt->entryTime);
-
         mem_intr->writeQueueSize--;
 
         // remove the request from the queue - the iterator is no longer valid
@@ -1482,6 +1479,7 @@ MemCtrl::drain()
     // of that as well
     if (totalWriteQueueSize || totalReadQueueSize || !respQEmpty() ||
           !allIntfDrained()) {
+
         DPRINTF(Drain, "Memory controller not drained, write: %d, read: %d,"
                 " resp: %d\n", totalWriteQueueSize, totalReadQueueSize,
                 respQueue.size());

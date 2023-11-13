@@ -120,6 +120,7 @@ def config_mem(options, system):
 
     # Mandatory options
     opt_mem_channels = options.mem_channels
+    
     # Semi-optional options
     # Must have either mem_type or nvm_type or both
     opt_mem_type = getattr(options, "mem_type", None)

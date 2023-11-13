@@ -271,6 +271,7 @@ class MemCtrl : public qos::MemCtrl
         void recvMemBackdoorReq(const MemBackdoorReq &req,
                 MemBackdoorPtr &backdoor) override;
 
+
         bool recvTimingReq(PacketPtr) override;
 
         AddrRangeList getAddrRanges() const override;
