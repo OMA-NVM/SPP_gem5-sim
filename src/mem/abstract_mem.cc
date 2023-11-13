@@ -40,6 +40,9 @@
 
 #include "mem/abstract_mem.hh"
 
+#include <cstdint>
+#include <cstdio>
+#include <iostream>
 #include <vector>
 
 #include "base/loader/memory_image.hh"
@@ -393,7 +396,6 @@ AbstractMemory::access(PacketPtr pkt)
     assert(pkt->getAddrRange().isSubset(range));
 
     uint8_t *host_addr = toHostAddr(pkt->getAddr());
-
     if (pkt->cmd == MemCmd::SwapReq) {
         if (pkt->isAtomicOp()) {
             if (pmemAddr) {
@@ -483,7 +485,6 @@ AbstractMemory::functionalAccess(PacketPtr pkt)
     assert(pkt->getAddrRange().isSubset(range));
 
     uint8_t *host_addr = toHostAddr(pkt->getAddr());
-
     if (pkt->isRead()) {
         if (pmemAddr) {
             pkt->setData(host_addr);
@@ -494,7 +495,7 @@ AbstractMemory::functionalAccess(PacketPtr pkt)
         if (pmemAddr) {
             pkt->writeData(host_addr);
         }
-        TRACE_PACKET("Write");
+        TRACE_PACKET("Write");        
         pkt->makeResponse();
     } else if (pkt->isPrint()) {
         Packet::PrintReqState *prs =

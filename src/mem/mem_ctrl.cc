@@ -638,18 +638,17 @@ MemCtrl::accessAndRespond(PacketPtr pkt, Tick static_latency,
     panic_if(!mem_intr->getAddrRange().contains(pkt->getAddr()),
              "Can't handle address range for packet %s\n", pkt->print());
     
+    // copy memory access for Tracer and put it into map or update values
     auto it = memory_map.find(pkt->getAddr());
     if(it == memory_map.end()) {
         memory_content c;
         c.setAddress(pkt->getAddr());
         c.setNewContent(uint64_t(*mem_intr->toHostAddr(pkt->getAddr())));
-        //std::cout << "Add memory content first time\n";
         c.updateContent(pkt->getAddr(), pkt->isWrite(), uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
         memory_map.insert(std::pair<Addr, memory_content>(pkt->getAddr(), c));
         tracer->insertBuffer(c);
     } else {
         if(pkt->isWrite()) {
-            //std::cout << "Update memory\n";
             it->second.updateContent(pkt->getAddr(), pkt->isWrite(), uint64_t(*pkt->getConstPtr<uint8_t>()), curTick());
             tracer->insertBuffer(it->second);
         } else {

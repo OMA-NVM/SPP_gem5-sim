@@ -8,7 +8,7 @@ simulate() {
     --kernel=traces/benchmarks/bin/arm/$1_gem5-arm64.dbg \
     --cpu-type=DerivO3CPU --machine-type=VExpress_GEM5_V2 --caches --l2cache \
     --l1i_size='32kB' --l1d_size='8kB' --l2_size='8kB' --dtb-filename=none \
-    --mem-size=4GB #> gem5.terminal &
+    --mem-size=8GB #> gem5.terminal &
     #disown $(jobs -p)
 }
 

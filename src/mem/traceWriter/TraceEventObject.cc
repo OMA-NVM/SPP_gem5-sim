@@ -1,8 +1,11 @@
 #include "TraceEventObject.hh"
+#include "base/types.hh"
 #include "params/SimObject.hh"
 #include "params/TraceEventObject.hh"
 #include "sim/cur_tick.hh"
+#include <zlib.h>
 #include <cstddef>
+#include <ctime>
 #include <ios>
 #include <iostream>
 #include <iterator>
@@ -50,12 +53,14 @@ TraceEventObject::resetFile()
 void 
 TraceEventObject::processEvent()
 {
-    trace.open(filePath, std::ios::out | std::ios::app);
-    if (buffer.size() > 0 && getIndex() < buffer.size()) {
-        tracer->WriteTraceLine(trace, buffer.at(getIndex()));
-        addIndex();
+    if(!buffer.empty()) {
+        trace.open(filePath, std::ios::out | std::ios::app);
+        for (int i = 0; i<buffer.size(); i++) {
+            tracer->WriteTraceLine(trace, buffer.at(i));
+        }
+        buffer.erase(buffer.begin(), buffer.begin()+buffer.size()-1);
+        trace.close();
     }
-    trace.close();
     schedule(event, curTick() + time);
 }
 

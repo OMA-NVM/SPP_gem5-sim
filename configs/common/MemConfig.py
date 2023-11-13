@@ -236,6 +236,7 @@ def config_mem(options, system):
                 # Create the controller that will drive the interface
                 mem_ctrl = dram_intf.controller()
 
+                # MemoryTracer that listens to all Operations at in mem_ctrl
                 mem_ctrl.tracerObject = system.tracer
                 
                 mem_ctrls.append(mem_ctrl)

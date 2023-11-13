@@ -10,6 +10,7 @@
 #include "sim/sim_object.hh"
 #include <string>
 #include <vector>
+
 namespace gem5
 {
 
@@ -21,7 +22,7 @@ class TraceEventObject : public SimObject
     EventFunctionWrapper event;  
 
     std::ofstream trace;
-
+    
     std::string filePath = "test.txt";
 
     std::vector<memory_content> buffer;
