@@ -104,6 +104,12 @@ class ListPlatform(argparse.Action):
 
 
 def addNoISAOptions(parser):
+    # Check for extra nvmain configuration override options
+    for arg in sys.argv:
+        if arg[:9] == "--nvmain-":
+            parser.add_argument(arg.split('=')[0], type=str, default="NULL",
+                       help="Set NVMain configuration value for a parameter")
+
     parser.add_argument("-n", "--num-cpus", type=int, default=1)
     parser.add_argument(
         "--sys-voltage",
@@ -217,7 +223,7 @@ def addNoISAOptions(parser):
         "--maxtime",
         type=float,
         default=None,
-        help="Run to the specified absolute simulated time in " "seconds",
+        help="Run to the specified absolute simulated time in seconds",
     )
     parser.add_argument(
         "-P",
@@ -691,7 +697,7 @@ def addSEOptions(parser):
         "-o",
         "--options",
         default="",
-        help="""The options to pass to the binary, use " "
+        help="""The options to pass to the binary, use
                               around the entire string""",
     )
     parser.add_argument(
@@ -834,8 +840,7 @@ def addFSOptions(parser):
         action="store",
         type=str,
         dest="benchmark",
-        help="Specify the benchmark to run. Available benchmarks: %s"
-        % DefinedBenchmarks,
+        help=f"Specify the benchmark to run. Available benchmarks: {DefinedBenchmarks}",
     )
 
     # Metafile options

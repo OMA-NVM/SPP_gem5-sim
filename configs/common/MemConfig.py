@@ -234,7 +234,10 @@ def config_mem(options, system):
                     )
 
                 # Create the controller that will drive the interface
-                mem_ctrl = dram_intf.controller()
+                if opt_mem_type and opt_mem_type == "NVMainMemory":
+                    mem_ctrl = dram_intf
+                else:
+                    mem_ctrl = dram_intf.controller()
 
                 # MemoryTracer that listens to all Operations at in mem_ctrl
                 mem_ctrl.tracerObject = system.tracer
